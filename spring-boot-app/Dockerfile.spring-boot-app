@@ -1,0 +1,29 @@
+# Use a base image with Maven and JDK for building the Spring Boot app
+FROM maven:3.8.4-jdk-11 AS build
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Clone the basic-microservices repository
+RUN git clone https://github.com/kkenan/basic-microservices.git
+
+# Change directory to spring-boot-app
+WORKDIR /app/basic-microservices/spring-boot-app
+
+# Build the Spring Boot app with Maven
+RUN mvn clean package -DskipTests
+
+# Create a final image with only JRE and the Spring Boot app artifact
+FROM openjdk:11-jre-slim
+
+# Copy the artifact from the build stage to the final image
+COPY --from=build /app/basic-microservices/spring-boot-app/target/spring-boot-app.jar /app/spring-boot-app.jar
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Command to run the Spring Boot application
+CMD ["java", "-jar", "spring-boot-app.jar"]
