@@ -1,0 +1,23 @@
+# Use a base Node.js image
+FROM node:16 AS build
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Clone the basic-microservices repository
+RUN git clone https://github.com/kkenan/basic-microservices.git
+
+# Change directory to node-app
+WORKDIR /app/basic-microservices/node-app
+
+# Install dependencies
+RUN npm install
+
+# Set the working directory for the app
+WORKDIR /app/basic-microservices/node-app
+
+# Expose port 3000 to the outside world
+EXPOSE 3000
+
+# Command to run the Node.js application
+CMD ["npm", "start"]
